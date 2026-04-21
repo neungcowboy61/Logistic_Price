@@ -211,8 +211,7 @@
 <div class="tab-bar">
   <button class="tab-btn active" onclick="switchTab('province')">🗺️ ค่าขนส่งตามจังหวัด</button>
   <button class="tab-btn" onclick="switchTab('farm')">🐷 ค่าขนส่งตามฟาร์มสุกร</button>
-  
-</div>
+  </div>
 
 <div class="main">
   <div id="uploadStatus" class="upload-status"></div>
@@ -333,6 +332,7 @@
       <ul>
         <li><b>Sheet 1:</b> ค่าขนส่งตามจังหวัด (header row 4)</li>
         <li><b>Sheet 2:</b> ค่าขนส่งตามฟาร์มสุกร</li>
+        <li><b>Sheet 3:</b> ค่าขนส่งตามรายลูกค้า</li>
       </ul>
       <br>ข้อมูลจะถูก<b>บันทึกในเบราว์เซอร์นี้โดยอัตโนมัติ</b> — เปิดไฟล์ใหม่ก็ยังคงใช้ข้อมูลล่าสุดอยู่ครับ
     </div>
@@ -374,8 +374,8 @@ function loadAppData() {
     provinceData: RAW_DATA.province_data,
     farmData: RAW_DATA.farm_data,
     customerData: [],
-    dieselPrice: RAW_DATA.diesel_price,
-    updateDate: RAW_DATA.update_date,
+    dieselPrice: '44.40',
+    updateDate: '16/04/69',
     isCustom: false
   };
 }
@@ -432,7 +432,6 @@ function updateStats() {
   document.getElementById('statDistricts').textContent = districts.size;
   document.getElementById('statCustomers').textContent = withCustomer;
   document.getElementById('statFarms').textContent = appData.farmData.length;
-  document.getElementById('statCustList').textContent = appData.customerData.length;
 }
 
 // ========= PROVINCE TAB =========
@@ -543,7 +542,7 @@ function renderProvinceTable() {
         ${r['4w_new'] > 0 ? `<div class="price-box blue">
           <div class="pb-label">🚛 รถ 4 ล้อ</div>
           <div class="pb-old">${fmt(r['4w_old'])}</div>
-          <div class="pb-new">${fmt(r['4w_new'])}</div>
+          <div class="pb-new">${fmt(r['4w_new'])} <small style="color:#e53e3e;font-weight:400">${fmtDiff(r['4w_diff'])}</small></div>
         </div>` : ''}
         ${r['6w_new'] > 0 ? `<div class="price-box green">
           <div class="pb-label">🚚 รถ 6-10 ล้อ</div>
@@ -781,7 +780,7 @@ function processFile(file) {
       // Update app data
       appData.provinceData = provinceData.length > 0 ? provinceData : appData.provinceData;
       appData.farmData = farmData.length > 0 ? farmData : appData.farmData;
-      
+      appData.customerData = customerData.length > 0 ? customerData : appData.customerData;
       appData.dieselPrice = dieselPrice;
       appData.updateDate = updateDate;
       appData.isCustom = true;
@@ -795,11 +794,11 @@ function processFile(file) {
       updateCustomDataBanner();
       updateStats();
       populateProvinceDropdown();
-      provincePage = 1; farmPage = 1; customerPage = 1;
+      provincePage = 1; farmPage = 1;
       renderProvinceTable();
       renderFarmTable();
-          const saveMsg = saved ? ' และบันทึกถาวรแล้ว 💾' : ' (ไม่สามารถบันทึกถาวรได้)';
-      showStatus('success', `✅ โหลดข้อมูลสำเร็จ${saveMsg} — จังหวัด ${new Set(provinceData.map(r=>r.province)).size} จังหวัด | ฟาร์ม ${farmData.length} แห่ง | ลูกค้า ${customerData.length} ราย`);
+      const saveMsg = saved ? ' และบันทึกถาวรแล้ว 💾' : ' (ไม่สามารถบันทึกถาวรได้)';
+      showStatus('success', `✅ โหลดข้อมูลสำเร็จ${saveMsg} — จังหวัด ${new Set(provinceData.map(r=>r.province)).size} จังหวัด | ฟาร์ม ${farmData.length} แห่ง`);
     } catch(err) {
       closeUploadModal();
       showStatus('error', '❌ เกิดข้อผิดพลาดในการอ่านไฟล์: ' + err.message);
@@ -815,15 +814,15 @@ function resetToOriginal() {
     provinceData: RAW_DATA.province_data,
     farmData: RAW_DATA.farm_data,
     customerData: [],
-    dieselPrice: RAW_DATA.diesel_price,
-    updateDate: RAW_DATA.update_date,
+    dieselPrice: '44.40',
+    updateDate: '16/04/69',
     isCustom: false
   };
   updateBadges();
   updateCustomDataBanner();
   updateStats();
   populateProvinceDropdown();
-  provincePage = 1; farmPage = 1; customerPage = 1;
+  provincePage = 1; farmPage = 1;
   renderProvinceTable();
   renderFarmTable();
   showStatus('success', '↩️ กลับเป็นข้อมูลเดิมเรียบร้อยแล้ว');
